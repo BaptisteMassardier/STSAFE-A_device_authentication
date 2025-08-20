@@ -2,7 +2,7 @@
 # STSAFE-A Accessory authentication
 
 This project illustrates how to use the STSAFE-A Secure Element and STMicroelectronics Secure Element Library to perform device/accessory authentication.
-When loaded on the target MCU platform , the project performes an STSAFE-A authentication . This authentication scheme is typicaly used in accessories authentication use cases.
+When loaded on the target MCU platform, the project performs an STSAFE-A authentication. This authentication scheme is typically used in accessory authentication use cases.
 
 ```mermaid
 sequenceDiagram
@@ -18,9 +18,9 @@ sequenceDiagram
     note over AUTH : Verify certificate <br> using public key <br>from CA certificate
     note over AUTH : Generate Challenge <br> (TRNG)
     AUTH ->>+ STSE : ECDSA_Sign(Challenge)
-    note over STSE : Generate signature <br> using Priv_ke <br> (ECDSA sign)
+    note over STSE : Generate signature <br> using Priv_key <br> (ECDSA sign)
     STSE -->>- AUTH : signature
-    Note over AUTH : Verify signature <br> using public key <br>from CA certificate <br> (ECDSA verify)
+    note over AUTH : Verify signature <br> using public key <br>from CA certificate <br> (ECDSA verify)
     deactivate AUTH
 ```
 
@@ -28,20 +28,20 @@ The example applicative flowchart is illustrated below :
 
 ```mermaid
 flowchart TD
-    A["MAIN"] --> B["Initialize Apps terminal \n(baudrate = 115200)"]
+    A["MAIN"] --> B["Initialize Apps terminal <br>(baudrate = 115200)"]
     B --> C["Print example title and instructions"]
     C --> D["Initialize STSE Handler"]
     D --> E["Parse and print Root CA certificate"]
     E --> F["Get STSAFE-A leaf-certificate"]
     F --> G["Parse and print STSAFE-A leaf-certificate"]
     G --> H["Verify device certificate signature using Root CA public key"]
-    H --> I["Generate Challenge \n(Random Number)"]
-    I --> J["Get Challenge signature from STSAFE-A "]
+    H --> I["Generate Challenge <br>(Random Number)"]
+    I --> J["Get Challenge signature from STSAFE-A"]
     J --> K["Verify signature using STSAFE-A pubkey"]
     K --> L[endless loop]
 ```
 
-STSELib API used in the example are the following :
+STSELib APIs used in the example are the following:
 
 - stse_init
 - stse_certificate_parse
@@ -63,25 +63,43 @@ STSELib API used in the example are the following :
 
 ## Getting started with the project
 
-- Connect the [X-NUCLEO-ESE01A1](https://www.st.com/en/ecosystems/x-nucleo-ese01a1.html) expansion board on the top of the [NUCLEO-L452RE](https://www.st.com/en/evaluation-tools/nucleo-l452re.html) evaluation board.
+### Prepare the middlewares
+
+This project uses two middleware: [STSELib](https://github.com/STMicroelectronics/STSELib) and [X-CUBE-CRYPTOLIB](https://www.st.com/en/embedded-software/x-cube-cryptolib.html).
+Before compiling the project, you need to download these middleware.
+
+- STSELib
+  - This dependency is already included as a submodule in the project repository.
+  - If you have cloned the repository, you can update the submodule by running:
+    ```bash
+    git submodule update --init --recursive
+    ```
+  - If you have downloaded the repository as a ZIP file, you can download the latest release from [STSELib releases](https://github.com/STMicroelectronics/STSELib/releases).
+
+- X-CUBE-CRYPTOLIB
+  - Follow the [instructions](./Middlewares/X-CUBE-CRYPTOLIB/README.md) to download and install the X-CUBE-CRYPTOLIB middleware.
+
+### Build and run the project
+
+- Connect the [X-NUCLEO-ESE01A1](https://www.st.com/en/ecosystems/x-nucleo-ese01a1.html) expansion board on top of the [NUCLEO-L452RE](https://www.st.com/en/evaluation-tools/nucleo-l452re.html) evaluation board.
 
 ![](./Pictures/X-NUCLEO_eval_kit.png)
 
-- Connect the board to the development computer and Open and configure a terminal software as follow (i.e. Teraterm).
+- Connect the board to the development computer and open and configure a terminal software as follows (e.g., Teraterm).
 
 ![](./Pictures/teraterm_config.png)
 
 - Open the STM32CubeIDE projects located in Application/STM32CubeIDE
 
-- Build the project by clicking the “**Build the active configurations of selected projects\ **” button and verify that no error is reported by the GCC compiler/Linker.
+- Build the project by clicking the “*Build the active configurations of selected projects*” button and verify that no error is reported by the GCC compiler/Linker.
 
-- Launch a debug session then wait the debugger to stop on the first main routine instruction and press Start button to execute the main routine.
+- Launch a debug session, then wait for the debugger to stop at the first instruction in the main routine, and press the Start button to execute the main routine.
 
 > [!NOTE]
-> - Power configuation Jumper must be set to 3V3-VCC.
-> - The COM port can differ from board to board. Please refer to windows device manager.
+> - Power configuration jumper must be set to 3V3-VCC.
+> - The COM port can differ from board to board. Please refer to Windows Device Manager.
 
-<b>Result</b> :
+**Result** :
 
 This project reports execution log through the on-board STLINK CDC bridge.
 These logs can be analyzed on development computer using a serial terminal application (i.e.: Teraterm).
